@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour
     public float gravaity = -10f;
     Vector3 velocity;
     CharacterController characterController;
+    public Transform groundCheck;
+    public LayerMask groundMask;
+    bool isGrounded;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +27,41 @@ public class PlayerController : MonoBehaviour
 
        velocity.y += gravaity * Time.deltaTime;
        characterController.Move(velocity * Time.deltaTime);
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2;
+        }
+        RaycastHit hit;
+        if (Physics.Raycast(
+                groundCheck.position,
+                transform.TransformDirection(Vector3.down),
+                out hit,
+                0.4f,
+                groundMask))
+        {
+            string terrainType;
+            terrainType = hit.collider.gameObject.tag;
+            switch (terrainType)
+            {
+                default:
+                    speed = 12;
+                    break;
+                case "LowPlane":
+                    speed = 3;
+                    break;
+                case "HighPlane":
+                    speed = 20;
+                    break;
+            }
+        }
+    }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.tag == "PickUp")
+        {
+            hit.gameObject.GetComponent<PickUp>().Picked();
+        }
     }
 }
