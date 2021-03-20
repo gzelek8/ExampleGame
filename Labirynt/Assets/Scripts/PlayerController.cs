@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundMask;
     bool isGrounded;
+    float verticalSpeed;
+    public float jumpSpeed;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,18 +22,22 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        Vector3 move = transform.right * x + transform.forward * z;
-        characterController.Move(move * speed * Time.deltaTime);
-
-       velocity.y += gravaity * Time.deltaTime;
-       characterController.Move(velocity * Time.deltaTime);
+        Movement();
+        CheckIsGrounded();
+        CheckTerrainType();
+    }
+    
+    private void CheckIsGrounded()
+    {
         isGrounded = Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2;
+            verticalSpeed = -2;
         }
+    }
+
+    private void CheckTerrainType()
+    {
         RaycastHit hit;
         if (Physics.Raycast(
                 groundCheck.position,
@@ -55,6 +61,19 @@ public class PlayerController : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private void Movement()
+    {
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        verticalSpeed += gravaity * Time.deltaTime;
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            verticalSpeed = jumpSpeed;
+        }
+        characterController.Move((x * transform.right + z * transform.forward + verticalSpeed * transform.up) * Time.deltaTime * speed);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
