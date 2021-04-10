@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour
     NavMeshAgent navMeshAgent;
     public float chaseRange = 10f;
     public float distanceToTarget = Mathf.Infinity;
+    public bool isProvkoed;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,11 +22,19 @@ public class EnemyAI : MonoBehaviour
         distanceToTarget = Vector3.Distance(transform.position, target.position);
         if (distanceToTarget <= chaseRange)
             navMeshAgent.SetDestination(target.position);
+        if (isProvkoed)
+            navMeshAgent.SetDestination(target.position);
+       
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+    }
+    
+    public void OnDamageTaken()
+    {
+        isProvkoed = true;
     }
 }
