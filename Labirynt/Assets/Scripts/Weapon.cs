@@ -9,18 +9,32 @@ public class Weapon : MonoBehaviour
     public float range = 100f;
     public ParticleSystem muzzleFLash;
     public float damage = 25f;
+    bool canShoot = true;
+    public Ammo ammoSlot;
     void Update()
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            Shoot();
+            if (canShoot)
+            {
+                StartCoroutine("Shoot");
+            }
         }
     }
 
-    private void Shoot()
+    private IEnumerator Shoot()
     {
-        ProcessRaycast();
-        PlayMuzzleFlash();
+        
+        if (ammoSlot.GetCurrentAmmo() > 0)
+        {
+            ProcessRaycast();
+            PlayMuzzleFlash();
+            ammoSlot.ReduceCurrentAmmo();
+        }
+        
+        canShoot = false;
+        yield return new WaitForSeconds(0.5f);
+        canShoot = true;
     }
 
     private void PlayMuzzleFlash()

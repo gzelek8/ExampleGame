@@ -11,7 +11,18 @@ public class EnemyHealth : MonoBehaviour
         healthPoints -= damage;
         if (healthPoints <= 0)
         {
-            Destroy(gameObject);
+            if (GetComponent<EnemyAI>().isAlive)
+            {
+                GetComponent<EnemyAI>().isAlive = false;
+                StartCoroutine("Die");
+            }
         }
+    }
+
+    IEnumerator Die()
+    {
+        GetComponent<Animator>().SetTrigger("Die");
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject);
     }
 }
