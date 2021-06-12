@@ -78,11 +78,19 @@ public class EnemyAI : MonoBehaviour
     {
         if (!isAttack)
         {
+            StartCoroutine("WaitForFinishAttackProcss");
             animator.SetTrigger("Attack_1");
+            playerHealth.GetComponent<PlayerHealth>().TakeDemage(demage);
+
         }
-        isAttack = true;
         isWalk = false;
-        playerHealth.GetComponent<PlayerHealth>().TakeDemage(demage);
+    }
+
+    IEnumerator WaitForFinishAttackProcss()
+    {
+        isAttack = true;
+        yield return new WaitForSeconds(1);
+        isAttack = false;
     }
     
 

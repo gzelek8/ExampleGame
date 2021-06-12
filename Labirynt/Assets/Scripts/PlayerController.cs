@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour
     {
         if (hit.gameObject.tag == "PickUp")
         {
+            GetComponent<Ammo>().AddCurrentAmmo(5);
             hit.gameObject.GetComponent<PickUp>().Picked();
         }
     }
